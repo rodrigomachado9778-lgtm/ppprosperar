@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb } from "@/src/lib/firebase/admin";
 import { verifyFirebaseIdTokenFromRequest } from "@/src/lib/firebase/adminAuth";
 
 export const runtime = "nodejs";
-
 
 function jsonError(message: string, status = 400) {
   return NextResponse.json({ ok: false, message }, { status });
@@ -17,13 +16,14 @@ function requireAdmin(decoded: any) {
   return decoded && decoded.role === "admin";
 }
 
-export async function DELETE(req: Request, ctx: { params: { uid: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ uid: string }> }
+) {
   const decoded = await verifyFirebaseIdTokenFromRequest(req);
   if (!requireAdmin(decoded)) return jsonError("Acesso negado.", 403);
 
-  // Next.js can provide params as a Promise in some runtimes (e.g. Turbopack).
-  // Awaiting works for both promise and non-promise values.
-  const { uid } = await (ctx as any).params;
+  const { uid } = await params;
   if (!uid) return jsonError("UID inválido.", 422);
 
   const auth = getAdminAuth();
@@ -50,12 +50,14 @@ export async function DELETE(req: Request, ctx: { params: { uid: string } }) {
   return jsonOk({ uid });
 }
 
-export async function PATCH(req: Request, ctx: { params: { uid: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ uid: string }> }
+) {
   const decoded = await verifyFirebaseIdTokenFromRequest(req);
   if (!requireAdmin(decoded)) return jsonError("Acesso negado.", 403);
 
-  // Next.js can provide params as a Promise in some runtimes (e.g. Turbopack).
-  const { uid } = await (ctx as any).params;
+  const { uid } = await params;
   if (!uid) return jsonError("UID inválido.", 422);
 
   let body: any = null;
@@ -65,8 +67,19 @@ export async function PATCH(req: Request, ctx: { params: { uid: string } }) {
     body = null;
   }
 
-  const activeEditionId = body?.activeEditionId === null ? null : (body?.activeEditionId ? String(body.activeEditionId) : undefined);
-  const displayName = body?.displayName === null ? null : (body?.displayName ? String(body.displayName) : undefined);
+  const activeEditionId =
+    body?.activeEditionId === null
+      ? null
+      : body?.activeEditionId
+      ? String(body.activeEditionId)
+      : undefined;
+
+  const displayName =
+    body?.displayName === null
+      ? null
+      : body?.displayName
+      ? String(body.displayName)
+      : undefined;
 
   if (activeEditionId === undefined && displayName === undefined) {
     return jsonError("Nada para atualizar.", 422);
