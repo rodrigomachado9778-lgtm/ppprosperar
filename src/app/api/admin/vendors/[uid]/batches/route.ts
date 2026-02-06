@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/src/lib/firebase/admin";
 import { verifyFirebaseIdTokenFromRequest } from "@/src/lib/firebase/adminAuth";
 
@@ -79,14 +79,14 @@ async function markBatchAvailable(editionId: string, batchNumber: number) {
  * Salva vendor_permissions e marca batches recém adicionados como AVAILABLE.
  */
 export async function PUT(
-  req: Request,
-  { params }: { params: { uid: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ uid: string }> }
 ) {
   // Auth + role
   const decoded = await verifyFirebaseIdTokenFromRequest(req);
   if (!isAdmin(decoded)) return jsonError("Acesso negado.", 403);
 
-  const uid = params?.uid;
+  const { uid } = await params;
   if (!uid) return jsonError("UID inválido.", 422);
 
   // Body
@@ -122,10 +122,7 @@ export async function PUT(
   const added = batches.filter((n) => !prevBatches.includes(n));
 
   // Persiste permissões
-  await permRef.set(
-    { batches, updatedAt: new Date() },
-    { merge: true }
-  );
+  await permRef.set({ batches, updatedAt: new Date() }, { merge: true });
 
   // Libera cards dos batches adicionados
   let updatedCards = 0;
