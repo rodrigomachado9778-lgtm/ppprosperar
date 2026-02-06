@@ -1,0 +1,206 @@
+/*
+  ATENÇÃO (SEGURANÇA): Este arquivo permite leitura pública de algumas coleções (ex.: cards/rounds/editions).
+  Se você NÃO quiser expor os números das cartelas publicamente, ajuste as regras para restringir read.
+*/
+
+Cole estas regras em Firestore Database → Rules e publique.
+
+Observação: estas regras permitem:
+- Admin gerenciar edições, gerar cartelas e realizar sorteio.
+- Vendedor (role=vendor) operar somente na sua edição ativa (users/{uid}.activeEditionId).
+- Vendedor cadastrar venda e validar cartelas somente enquanto a edição estiver DRAFT/READY.
+- Após iniciar sorteio (status RUNNING), nenhum cadastro/validação é permitido.
+- Vendedor pode ler apenas as vendas que ele cadastrou.
+- Vendedores podem buscar/cadastrar compradores globais (buyers) para autopreenchimento por CPF/telefone.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function userDoc() { return get(/databases/$(db)/documents/users/$(request.auth.uid)); }
+    function role() {
+      return request.auth.token.role != null
+        ? request.auth.token.role
+        : userDoc().data.role;
+    }
+    function isAdmin() { return signedIn() && role() == "admin"; }
+    function isVendor() { return signedIn() && role() == "vendor"; }
+    function isVendorOrAdmin() { return isAdmin() || isVendor(); }
+    function activeEditionId() { return userDoc().data.activeEditionId; }
+
+    function system() {
+      return get(/databases/$(db)/documents/config/system);
+    }
+    function canCreateEdition() {
+      return !exists(/databases/$(db)/documents/config/system)
+        || system().data.currentEditionStatus == "FINISHED";
+    }
+
+    function edition(editionId) {
+      return get(/databases/$(db)/documents/editions/$(editionId));
+    }
+    function salesOpen(editionId) {
+      return edition(editionId).data.status == "DRAFT"
+          || edition(editionId).data.status == "READY";
+    }
+    function vendorOnActiveEdition(editionId) {
+      return isAdmin() || (isVendor() && activeEditionId() == editionId);
+    }
+
+    function vendorPerm(editionId) {
+      return get(/databases/$(db)/documents/editions/$(editionId)/vendor_permissions/$(request.auth.uid));
+    }
+    function vendorHasBatch(editionId, batchNumber) {
+      // Se não existir permissão, não libera.
+      // Observação: por compatibilidade, aceitamos batches salvos como número OU string.
+      // E também evitamos erro caso o campo "batches" não exista.
+      return exists(/databases/$(db)/documents/editions/$(editionId)/vendor_permissions/$(request.auth.uid))
+        && (vendorPerm(editionId).data.batches is list)
+        && (
+          vendorPerm(editionId).data.batches.hasAny([batchNumber])
+          || vendorPerm(editionId).data.batches.hasAny([string(batchNumber)])
+          || vendorPerm(editionId).data.batches.hasAny([int(batchNumber)])
+        );
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      // Somente ADMIN pode cadastrar/alterar/excluir vendedores.
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /buyers/{buyerId} {
+      allow read: if isVendorOrAdmin();
+      allow create, update: if isVendorOrAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /buyers_lookup_phone/{phoneE164} {
+      allow read: if isVendorOrAdmin();
+      allow create, update: if isVendorOrAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /buyers_lookup_cpf/{cpfHash} {
+      allow read: if isVendorOrAdmin();
+      allow create, update: if isVendorOrAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /buyers_lookup_hash/{hash} {
+      // Lookup used by the public /resultado page (CPF + telefone), queried only via server (firebase-admin).
+      // IMPORTANT: never allow read from client.
+      allow read: if false;
+      allow create, update: if isVendorOrAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /config/{docId} {
+      // Singleton: config/system controla a edição ativa.
+      allow read: if isAdmin();
+      allow create, update: if isAdmin();
+      allow delete: if false;
+    }
+
+    match /editions/{editionId} {
+      allow read: if true;
+      allow create: if isAdmin() && canCreateEdition();
+      allow update, delete: if isAdmin();
+
+      match /vendor_permissions/{vendorUid} {
+        // Define quais lotes (batches) um vendedor pode vender/validar nesta edição.
+        allow read: if isAdmin() || (isVendor() && request.auth.uid == vendorUid);
+        allow create, update: if isAdmin();
+        allow delete: if isAdmin();
+      }
+
+      match /cards/{cardId} {
+        // Cartelas NÃO são públicas. Consulta pública deve usar /api/public/card.
+        // IMPORTANTE (UX): o vendedor precisa conseguir LER a cartela para informar
+        // “lote não liberado” e “já cadastrada”, mesmo quando a cartela não pertence
+        // a um lote permitido. Por isso, leitura para vendedor é liberada para TODAS
+        // as cartelas da sua edição ativa. A TRAVA de segurança fica no UPDATE.
+        allow read: if signedIn() && (
+          isAdmin()
+          || (isVendor() && vendorOnActiveEdition(editionId))
+        );
+        allow create: if isAdmin();
+
+        allow update: if signedIn() && salesOpen(editionId) && (
+          // Admin pode liberar lote (GENERATED -> AVAILABLE) e também validar (AVAILABLE -> VALIDATED)
+          (
+            isAdmin()
+            && (
+              (
+                resource.data.status == "GENERATED"
+                && request.resource.data.status == "AVAILABLE"
+                && request.resource.data.numbers == resource.data.numbers
+                && request.resource.data.printedNumber == resource.data.printedNumber
+                && request.resource.data.publicNumberInt == resource.data.publicNumberInt
+                && request.resource.data.batch == resource.data.batch
+              )
+              ||
+              (
+                resource.data.status == "AVAILABLE"
+                && request.resource.data.status == "VALIDATED"
+                && request.resource.data.numbers == resource.data.numbers
+                && request.resource.data.printedNumber == resource.data.printedNumber
+                && request.resource.data.publicNumberInt == resource.data.publicNumberInt
+              )
+            )
+          )
+          ||
+          // Vendedor só valida cartela de lote liberado (AVAILABLE -> VALIDATED)
+          (
+            isVendor()
+            && vendorOnActiveEdition(editionId)
+            && (vendorHasBatch(editionId, resource.data.batch))
+            && resource.data.status == "AVAILABLE"
+            && request.resource.data.status == "VALIDATED"
+            && request.resource.data.numbers == resource.data.numbers
+            && request.resource.data.printedNumber == resource.data.printedNumber
+            && request.resource.data.publicNumberInt == resource.data.publicNumberInt
+          )
+        );
+
+        allow delete: if isAdmin() && salesOpen(editionId);
+      }
+
+      match /sales/{saleId} {
+        allow read: if isAdmin()
+          || (isVendor() && resource.data.vendorUid == request.auth.uid);
+
+        allow create: if isVendorOrAdmin()
+          && vendorOnActiveEdition(editionId)
+          && salesOpen(editionId)
+          && request.resource.data.vendorUid == request.auth.uid
+          && request.resource.data.cardPublicNumbers.size() > 0
+          && request.resource.data.cardPrintedNumbers.size() > 0
+          && request.resource.data.cardPublicNumbers.size() == request.resource.data.cardPrintedNumbers.size();
+
+        // Permite que o MESMO vendedor anexe mais cartelas à venda do mesmo comprador.
+        // (append-only) - não permite reduzir/remover cartelas.
+        allow update: if isVendorOrAdmin()
+          && vendorOnActiveEdition(editionId)
+          && salesOpen(editionId)
+          && resource.data.vendorUid == request.auth.uid
+          && request.resource.data.vendorUid == resource.data.vendorUid
+          && request.resource.data.buyerId == resource.data.buyerId
+          && request.resource.data.cardPublicNumbers.size() > resource.data.cardPublicNumbers.size()
+          && request.resource.data.cardPrintedNumbers.size() > resource.data.cardPrintedNumbers.size()
+          && request.resource.data.cardPublicNumbers.size() == request.resource.data.cardPrintedNumbers.size();
+
+        allow delete: if false;
+      }
+
+      match /rounds/{roundId} {
+        allow read: if true;
+        allow create, update, delete: if isAdmin();
+        match /events/{eventId} {
+          allow read, write: if isAdmin();
+        }
+      }
+    }
+  }
+}
