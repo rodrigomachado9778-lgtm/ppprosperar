@@ -8,7 +8,7 @@ export function MobileShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-dvh bg-zinc-50 text-zinc-900">
+    <div className="min-h-dvh bg-white text-zinc-900">
       <div className="mx-auto w-full max-w-md px-4 pb-8 pt-6">
         {(title || subtitle) && (
           <div className="mb-5">
@@ -19,7 +19,7 @@ export function MobileShell({
           </div>
         )}
 
-        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200 shadow">
+        <div className="rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-200 shadow">
           {children}
         </div>
 

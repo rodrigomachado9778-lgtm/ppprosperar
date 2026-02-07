@@ -97,13 +97,7 @@ export default function DashboardPage() {
       </AppShell>
     );
   }
-  if (!user) {
-    return (
-      <AppShell title="Dashboard">
-        <p className="text-sm text-zinc-600">Redirecionando…</p>
-      </AppShell>
-    );
-  }
+  if (!user) return null;
 
   const edition = data?.edition ?? null;
   const k = data?.kpis;
@@ -142,7 +136,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={reload}
-                className="rounded-xl bg-zinc-50 px-3 py-2 text-xs font-medium ring-1 ring-zinc-200 hover:ring-zinc-200"
+                className="rounded-xl bg-zinc-900 px-3 py-2 text-xs font-medium ring-1 ring-zinc-200"
               >
                 Atualizar
               </button>

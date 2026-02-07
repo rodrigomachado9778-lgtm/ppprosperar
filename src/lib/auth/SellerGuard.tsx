@@ -30,14 +30,7 @@ export function SellerGuard({
     );
   }
 
-  if (!user) {
-    return (
-      <AppShell title={title}>
-        {subtitle ? <p className="mb-3 text-xs text-zinc-600">{subtitle}</p> : null}
-        <p className="text-sm text-zinc-600">Redirecionando…</p>
-      </AppShell>
-    );
-  }
+  if (!user) return null;
 
   if (role !== "admin" && role !== "vendor") {
     return (

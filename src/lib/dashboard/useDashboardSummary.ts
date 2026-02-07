@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/src/lib/auth/AuthProvider";
+import { fetchWithAuth } from "@/src/lib/auth/fetchWithAuth";
 
 export type DashboardSummary = {
   role: "admin" | "vendor";
@@ -90,12 +91,8 @@ export function useDashboardSummary() {
       setLoading(true);
       setError(null);
       try {
-        const token = await user.getIdToken();
         const qs = editionId ? `?editionId=${encodeURIComponent(editionId)}` : "";
-        const res = await fetch(`/api/dashboard/summary${qs}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          cache: "no-store",
-        });
+        const res = await fetchWithAuth(user, `/api/dashboard/summary${qs}`, { cache: "no-store" });
         const json = await res.json();
         if (!res.ok || !json?.ok) {
           setData(null);

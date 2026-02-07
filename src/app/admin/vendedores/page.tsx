@@ -42,7 +42,7 @@ function permKey(editionId: string, userId: string) {
 async function getIdTokenOrThrow() {
   const u = auth.currentUser;
   if (!u) throw new Error("not_signed_in");
-  return u.getIdToken();
+  return u.getIdToken(true);
 }
 
 
