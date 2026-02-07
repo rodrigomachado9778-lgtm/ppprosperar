@@ -61,7 +61,7 @@ export default function ImprimirCartelasPage() {
           >
             {loading ? "Carregando..." : "Imprimir (Ctrl+P)"}
           </button>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-zinc-600">
             Dica: selecione “Salvar como PDF” na impressão para baixar o arquivo.
           </p>
         </div>
@@ -76,9 +76,9 @@ export default function ImprimirCartelasPage() {
         `}</style>
 
         {loading ? (
-          <p className="text-sm text-zinc-400">Carregando…</p>
+          <p className="text-sm text-zinc-600">Carregando…</p>
         ) : items.length === 0 ? (
-          <p className="text-sm text-zinc-400">Nenhuma cartela encontrada.</p>
+          <p className="text-sm text-zinc-600">Nenhuma cartela encontrada.</p>
         ) : (
           <div className="print-grid">
             {items.map((c) => (

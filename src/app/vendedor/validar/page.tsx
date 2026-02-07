@@ -894,12 +894,12 @@ export default function CadastroVendasPage() {
   return (
     <SellerGuard title="Cadastro (vendas)" subtitle="Vendedor • cadastrar comprador e validar cartelas">
       <div className="space-y-6">
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm text-zinc-400">Edição atribuída</p>
+              <p className="text-sm text-zinc-600">Edição atribuída</p>
               <p className="text-base font-semibold">{edition?.name ?? (loading ? "Carregando…" : "—")}</p>
-              <p className="mt-1 text-sm text-zinc-400">Status: {edition?.status ?? "—"}</p>
+              <p className="mt-1 text-sm text-zinc-600">Status: {edition?.status ?? "—"}</p>
 
               {showNoEdition ? (
                 <p className="mt-2 text-xs text-amber-200">
@@ -915,13 +915,13 @@ export default function CadastroVendasPage() {
               ) : null}
 
               {edition ? (
-                <p className="mt-2 text-xs text-zinc-400">
+                <p className="mt-2 text-xs text-zinc-600">
                   ID: <span className="font-mono">{edition.id}</span>
                 </p>
               ) : null}
 
               {edition ? (
-                <p className="mt-1 text-xs text-zinc-400">
+                <p className="mt-1 text-xs text-zinc-600">
                   Lotes liberados: {allowedBatches.length ? allowedBatches.join(", ") : "—"}
                 </p>
               ) : null}
@@ -936,10 +936,10 @@ export default function CadastroVendasPage() {
         {msg ? <div className="rounded-2xl bg-emerald-500/10 p-4 text-sm text-emerald-200 ring-1 ring-emerald-500/20">{msg}</div> : null}
         {err ? <div className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-200 ring-1 ring-red-500/20">{err}</div> : null}
 
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm text-zinc-400">Cadastro</p>
+              <p className="text-sm text-zinc-600">Cadastro</p>
               <p className="text-base font-semibold">
                 {canRegister ? (
                   <span className="text-emerald-200">Liberado</span>
@@ -947,12 +947,12 @@ export default function CadastroVendasPage() {
                   <span className="text-red-200">Bloqueado (sorteio iniciado/encerrado)</span>
                 )}
               </p>
-              <p className="mt-1 text-xs text-zinc-400">
+              <p className="mt-1 text-xs text-zinc-600">
                 Dica: você pode digitar CPF e telefone para buscar comprador automaticamente.
               </p>
             </div>
 
-            <div className="text-right text-xs text-zinc-400">
+            <div className="text-right text-xs text-zinc-600">
               <div>Min dígitos cartela: {minDigits}</div>
               <div>{findingBuyer ? "Buscando comprador…" : buyerFound ? `Comprador: ${buyerFound.name} (CPF ****${buyerFound.cpfLast4})` : "—"}</div>
             </div>
@@ -960,46 +960,46 @@ export default function CadastroVendasPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <h2 className="text-base font-semibold">Comprador</h2>
-            <p className="mt-1 text-xs text-zinc-400">Preencha os dados do comprador. CPF deve ser válido.</p>
+            <p className="mt-1 text-xs text-zinc-600">Preencha os dados do comprador. CPF deve ser válido.</p>
 
             <div className="mt-4 grid gap-3">
               <label className="grid gap-1 text-sm">
-                <span className="text-zinc-300">Nome</span>
+                <span className="text-zinc-700">Nome</span>
                 <input
                   value={buyerName}
                   onChange={(e) => setBuyerName(e.target.value)}
-                  className="rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-800 outline-none focus:ring-zinc-600"
+                  className="rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-200 outline-none focus:ring-zinc-600"
                   placeholder="Nome completo"
                   disabled={busy}
                 />
               </label>
 
               <label className="grid gap-1 text-sm">
-                <span className="text-zinc-300">Telefone</span>
+                <span className="text-zinc-700">Telefone</span>
                 <input
                   value={buyerPhone}
                   onChange={(e) => setBuyerPhone(e.target.value)}
-                  className="rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-800 outline-none focus:ring-zinc-600"
+                  className="rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-200 outline-none focus:ring-zinc-600"
                   placeholder="DDD + número (ex.: 11999999999)"
                   disabled={busy}
                 />
               </label>
 
               <label className="grid gap-1 text-sm">
-                <span className="text-zinc-300">CPF</span>
+                <span className="text-zinc-700">CPF</span>
                 <input
                   value={buyerCpf}
                   onChange={(e) => setBuyerCpf(e.target.value)}
-                  className="rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-800 outline-none focus:ring-zinc-600"
+                  className="rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-200 outline-none focus:ring-zinc-600"
                   placeholder="Somente números"
                   disabled={busy}
                 />
               </label>
 
               {buyerFound ? (
-                <div className="rounded-xl bg-zinc-900 p-3 text-xs text-zinc-300 ring-1 ring-zinc-800">
+                <div className="rounded-xl bg-zinc-900 p-3 text-xs text-zinc-700 ring-1 ring-zinc-200">
                   <div className="font-semibold">Comprador encontrado</div>
                   <div className="mt-1">Nome: {buyerFound.name}</div>
                   <div>Telefone: {buyerFound.phoneE164}</div>
@@ -1009,19 +1009,19 @@ export default function CadastroVendasPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <h2 className="text-base font-semibold">Cartelas</h2>
-            <p className="mt-1 text-xs text-zinc-400">
+            <p className="mt-1 text-xs text-zinc-600">
               Cole os números das cartelas (separados por espaço/linha/vírgula).
             </p>
 
             <div className="mt-4 grid gap-3">
               <label className="grid gap-1 text-sm">
-                <span className="text-zinc-300">Números</span>
+                <span className="text-zinc-700">Números</span>
                 <textarea
                   value={batchText}
                   onChange={(e) => setBatchText(e.target.value)}
-                  className="min-h-[140px] rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-800 outline-none focus:ring-zinc-600"
+                  className="min-h-[140px] rounded-xl bg-zinc-900 px-3 py-2 text-sm ring-1 ring-zinc-200 outline-none focus:ring-zinc-600"
                   placeholder={`Ex.: ${formatPrintedNumber(1, minDigits)} ${formatPrintedNumber(2, minDigits)} ${formatPrintedNumber(3, minDigits)}`}
                   disabled={busy}
                 />
@@ -1062,28 +1062,28 @@ export default function CadastroVendasPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <h2 className="text-base font-semibold">Minhas vendas recentes</h2>
-          <p className="mt-1 text-xs text-zinc-400">Últimas 20 vendas (ordenadas localmente).</p>
+          <p className="mt-1 text-xs text-zinc-600">Últimas 20 vendas (ordenadas localmente).</p>
 
           {salesErr ? <p className="mt-3 text-sm text-red-200">{salesErr}</p> : null}
 
           {sales === null ? (
-            <p className="mt-3 text-sm text-zinc-400">Carregando…</p>
+            <p className="mt-3 text-sm text-zinc-600">Carregando…</p>
           ) : sales.length === 0 ? (
-            <p className="mt-3 text-sm text-zinc-400">Nenhuma venda encontrada.</p>
+            <p className="mt-3 text-sm text-zinc-600">Nenhuma venda encontrada.</p>
           ) : (
             <div className="mt-4 space-y-3">
               {sales.map((s) => (
-                <div key={s.id} className="rounded-xl bg-zinc-900 p-3 ring-1 ring-zinc-800">
+                <div key={s.id} className="rounded-xl bg-zinc-900 p-3 ring-1 ring-zinc-200">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <div className="text-sm font-semibold">{s.buyerNameSnapshot}</div>
-                      <div className="text-xs text-zinc-400">
+                      <div className="text-xs text-zinc-600">
                         {s.buyerPhoneSnapshot} • CPF ****{s.buyerCpfLast4Snapshot}
                       </div>
                     </div>
-                    <div className="text-xs text-zinc-500">{createdAtSeconds(s.createdAt) ? new Date(createdAtSeconds(s.createdAt) * 1000).toLocaleString() : ""}</div>
+                    <div className="text-xs text-zinc-9000">{createdAtSeconds(s.createdAt) ? new Date(createdAtSeconds(s.createdAt) * 1000).toLocaleString() : ""}</div>
                   </div>
 
                   <div className="mt-2 flex flex-wrap gap-2">

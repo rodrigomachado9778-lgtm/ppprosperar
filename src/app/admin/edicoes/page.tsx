@@ -45,6 +45,8 @@ export default function AdminEditionsPage() {
   const [system, setSystem] = useState<{ currentEditionId?: string | null; currentEditionStatus?: EditionStatus | null } | null>(null);
 
   const [name, setName] = useState("");
+  // Preço da cartela (obrigatório)
+  const [cardPrice, setCardPrice] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [scheduledAt, setScheduledAt] = useState(""); // datetime-local
   // Prêmios por rodada (quantidade variável). Valores em BRL (string) para input.
@@ -53,6 +55,7 @@ export default function AdminEditionsPage() {
   // Duplicar edição
   const [dupFromId, setDupFromId] = useState<string>("");
   const [dupName, setDupName] = useState<string>("");
+  const [dupCardPrice, setDupCardPrice] = useState<string>("");
   const [dupYoutubeUrl, setDupYoutubeUrl] = useState<string>("");
   const [dupScheduledAt, setDupScheduledAt] = useState<string>("");
   const [dupRoundsPreview, setDupRoundsPreview] = useState<{ roundsCount: number; prizesLabel: string[] } | null>(null);
@@ -115,6 +118,9 @@ export default function AdminEditionsPage() {
       // sugestões automáticas de nome e youtube
       if (!dupName.trim()) setDupName(`Cópia - ${ed?.name ?? editionId}`);
       if (!dupYoutubeUrl.trim() && ed?.youtubeUrl) setDupYoutubeUrl(String(ed.youtubeUrl));
+      if (!dupCardPrice.trim() && (ed?.cardPriceCents ?? null) != null) {
+        setDupCardPrice(formatBRLFromCents(Number(ed.cardPriceCents) || 0));
+      }
     } catch {
       setDupErr("Não foi possível carregar a edição para duplicação.");
     }
@@ -133,12 +139,19 @@ export default function AdminEditionsPage() {
 
   const canCreate = useMemo(() => {
     if (createBlockedReason) return false;
-    return name.trim().length >= 3 && prizes.length >= 1;
-  }, [name, createBlockedReason, prizes.length]);
+    const price = parseBRLCents(cardPrice) ?? 0;
+    return name.trim().length >= 3 && prizes.length >= 1 && price > 0;
+  }, [name, cardPrice, createBlockedReason, prizes.length]);
 
   async function onCreate() {
     setErr(null);
     if (!canCreate) return;
+
+    const cardPriceCents = parseBRLCents(cardPrice) ?? 0;
+    if (cardPriceCents <= 0) {
+      setErr("Informe um preço válido para a cartela (maior que zero).");
+      return;
+    }
 
     setBusy(true);
     try {
@@ -165,6 +178,7 @@ export default function AdminEditionsPage() {
         tx.set(newEdRef, {
           name: name.trim(),
           status: "READY" satisfies EditionStatus,
+          cardPriceCents,
           youtubeUrl: youtube ? youtube : null,
           scheduledAt: schedDate ? schedDate : null,
           roundsCount,
@@ -200,6 +214,7 @@ export default function AdminEditionsPage() {
       });
 
       setName("");
+      setCardPrice("");
       setYoutubeUrl("");
       setScheduledAt("");
       setPrizes(["", "", "", ""]);
@@ -220,6 +235,11 @@ export default function AdminEditionsPage() {
     if (!dupFromId) return;
     if (!dupName.trim() || dupName.trim().length < 3) {
       setDupErr("Informe um nome para a nova edição.");
+      return;
+    }
+    const dupPriceCents = parseBRLCents(dupCardPrice) ?? 0;
+    if (dupPriceCents <= 0) {
+      setDupErr("Informe um preço válido para a cartela (maior que zero).");
       return;
     }
     if (createBlockedReason) {
@@ -263,6 +283,7 @@ export default function AdminEditionsPage() {
         tx.set(newEdRef, {
           name: dupName.trim(),
           status: "READY" satisfies EditionStatus,
+          cardPriceCents: dupPriceCents,
           youtubeUrl: youtube ? youtube : null,
           scheduledAt: schedDate ? schedDate : null,
           roundsCount,
@@ -296,6 +317,7 @@ export default function AdminEditionsPage() {
 
       setDupFromId("");
       setDupName("");
+      setDupCardPrice("");
       setDupYoutubeUrl("");
       setDupScheduledAt("");
       setDupRoundsPreview(null);
@@ -317,14 +339,14 @@ export default function AdminEditionsPage() {
   return (
     <AdminGuard title="Edições" subtitle="Criar e gerenciar edições do Projeto Prosperar">
       <div className="space-y-6">
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <h2 className="text-base font-semibold">Atalhos</h2>
-          <p className="mt-1 text-sm text-zinc-400">Crie rapidamente usando um modelo de rodadas ou duplique uma edição existente.</p>
+          <p className="mt-1 text-sm text-zinc-600">Crie rapidamente usando um modelo de rodadas ou duplique uma edição existente.</p>
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl bg-zinc-950/40 p-3 ring-1 ring-zinc-800">
+            <div className="rounded-2xl bg-white/40 p-3 ring-1 ring-zinc-200">
               <p className="text-sm font-semibold">Modelos de rodadas</p>
-              <p className="mt-1 text-xs text-zinc-400">Ajusta a quantidade de rodadas no formulário abaixo (mantém os valores já digitados quando possível).</p>
+              <p className="mt-1 text-xs text-zinc-600">Ajusta a quantidade de rodadas no formulário abaixo (mantém os valores já digitados quando possível).</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {[3, 4, 5, 6].map((n) => (
                   <button
@@ -339,13 +361,13 @@ export default function AdminEditionsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-zinc-950/40 p-3 ring-1 ring-zinc-800">
+            <div className="rounded-2xl bg-white/40 p-3 ring-1 ring-zinc-200">
               <p className="text-sm font-semibold">Duplicar edição</p>
-              <p className="mt-1 text-xs text-zinc-400">Cria uma nova edição copiando as rodadas e prêmios. Você altera nome, data e YouTube.</p>
+              <p className="mt-1 text-xs text-zinc-600">Cria uma nova edição copiando as rodadas e prêmios. Você altera nome, data e YouTube.</p>
 
               <div className="mt-3 grid gap-2">
                 <select
-                  className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-sm outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                  className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                   value={dupFromId}
                   onChange={(e) => {
                     const id = e.target.value;
@@ -362,35 +384,45 @@ export default function AdminEditionsPage() {
                 </select>
 
                 <input
-                  className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-sm outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                  className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                   placeholder="Nome da nova edição"
                   value={dupName}
                   onChange={(e) => setDupName(e.target.value)}
                 />
 
+                <div>
+                  <p className="text-xs text-zinc-600">Preço da cartela (obrigatório)</p>
+                  <input
+                    className="mt-2 w-full rounded-xl bg-zinc-100 px-3 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
+                    placeholder="Ex.: 10,00"
+                    value={dupCardPrice}
+                    onChange={(e) => setDupCardPrice(e.target.value)}
+                  />
+                </div>
+
                 <input
-                  className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-sm outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                  className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                   placeholder="Link do YouTube (opcional)"
                   value={dupYoutubeUrl}
                   onChange={(e) => setDupYoutubeUrl(e.target.value)}
                 />
 
                 <div>
-                  <p className="text-xs text-zinc-400">Data/hora do sorteio (opcional)</p>
+                  <p className="text-xs text-zinc-600">Data/hora do sorteio (opcional)</p>
                   <input
                     type="datetime-local"
-                    className="mt-2 w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-sm outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                    className="mt-2 w-full rounded-xl bg-zinc-100 px-3 py-3 text-sm outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                     value={dupScheduledAt}
                     onChange={(e) => setDupScheduledAt(e.target.value)}
                   />
                 </div>
 
                 {dupRoundsPreview && (
-                  <div className="rounded-xl bg-zinc-950/60 p-3 text-xs text-zinc-300 ring-1 ring-zinc-800">
+                  <div className="rounded-xl bg-zinc-100 p-3 text-xs text-zinc-700 ring-1 ring-zinc-200">
                     <p className="font-semibold">Prévia</p>
-                    <p className="mt-1 text-zinc-400">Rodadas: {dupRoundsPreview.roundsCount}</p>
+                    <p className="mt-1 text-zinc-600">Rodadas: {dupRoundsPreview.roundsCount}</p>
                     {dupRoundsPreview.prizesLabel.length > 0 && (
-                      <p className="mt-1 text-zinc-400">
+                      <p className="mt-1 text-zinc-600">
                         Prêmios: {dupRoundsPreview.prizesLabel.slice(0, 6).join(" • ")}
                         {dupRoundsPreview.prizesLabel.length > 6 ? " …" : ""}
                       </p>
@@ -419,9 +451,9 @@ export default function AdminEditionsPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <h2 className="text-base font-semibold">Nova edição</h2>
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="mt-1 text-sm text-zinc-600">
             Só é possível criar uma nova edição quando a anterior estiver <b>FINISHED</b>. Você escolhe quantas rodadas deseja.
           </p>
 
@@ -433,32 +465,42 @@ export default function AdminEditionsPage() {
 
           <div className="mt-4 grid gap-3">
             <input
-              className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+              className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
               placeholder='Nome (ex.: "Prosperar - Fevereiro/2026")'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
 
+            <div>
+              <p className="text-xs text-zinc-600">Preço da cartela (obrigatório)</p>
+              <input
+                className="mt-2 w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
+                placeholder="Ex.: 10,00"
+                value={cardPrice}
+                onChange={(e) => setCardPrice(e.target.value)}
+              />
+            </div>
+
             <input
-              className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+              className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
               placeholder="Link do YouTube (opcional)"
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
             />
 
             <div>
-              <p className="text-xs text-zinc-400">Data/hora do sorteio (opcional)</p>
+              <p className="text-xs text-zinc-600">Data/hora do sorteio (opcional)</p>
               <input
                 type="datetime-local"
-                className="mt-2 w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                className="mt-2 w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                 value={scheduledAt}
                 onChange={(e) => setScheduledAt(e.target.value)}
               />
             </div>
 
-            <div className="rounded-2xl bg-zinc-950/40 p-3 ring-1 ring-zinc-800">
+            <div className="rounded-2xl bg-white/40 p-3 ring-1 ring-zinc-200">
               <p className="text-sm font-semibold">Prêmios por rodada</p>
-              <p className="mt-1 text-xs text-zinc-400">Digite em reais (ex.: 250,00). Se vazio, fica 0. Você pode adicionar/remover rodadas.</p>
+              <p className="mt-1 text-xs text-zinc-600">Digite em reais (ex.: 250,00). Se vazio, fica 0. Você pode adicionar/remover rodadas.</p>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
@@ -475,14 +517,14 @@ export default function AdminEditionsPage() {
                 >
                   − Remover última
                 </button>
-                <span className="text-xs text-zinc-400">Total: {prizes.length} rodada(s)</span>
+                <span className="text-xs text-zinc-600">Total: {prizes.length} rodada(s)</span>
               </div>
               <div className="mt-3 grid gap-2">
                 {prizes.map((v, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <span className="w-24 text-xs text-zinc-400">Rodada {idx + 1}</span>
+                    <span className="w-24 text-xs text-zinc-600">Rodada {idx + 1}</span>
                     <input
-                      className="flex-1 rounded-xl bg-zinc-950/60 px-3 py-2 text-sm outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                      className="flex-1 rounded-xl bg-zinc-100 px-3 py-2 text-sm outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                       placeholder="R$ 0,00"
                       value={v}
                       onChange={(e) =>
@@ -516,29 +558,29 @@ export default function AdminEditionsPage() {
           )}
         </div>
 
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold">Edições</h2>
-            <Link className="text-sm text-zinc-300 underline decoration-zinc-600 hover:text-zinc-100" href="/resultado">
+            <Link className="text-sm text-zinc-700 underline decoration-zinc-600 hover:text-zinc-100" href="/resultado">
               Consulta pública
             </Link>
           </div>
 
           {loadingList ? (
-            <p className="mt-3 text-sm text-zinc-400">Carregando…</p>
+            <p className="mt-3 text-sm text-zinc-600">Carregando…</p>
           ) : items.length === 0 ? (
-            <p className="mt-3 text-sm text-zinc-400">Nenhuma edição criada ainda.</p>
+            <p className="mt-3 text-sm text-zinc-600">Nenhuma edição criada ainda.</p>
           ) : (
             <div className="mt-3 space-y-2">
               {items.map((it) => (
                 <Link
                   key={it.id}
                   href={`/admin/edicoes/${it.id}`}
-                  className="flex items-center justify-between rounded-xl bg-zinc-950/60 p-3 ring-1 ring-zinc-800 hover:ring-zinc-700"
+                  className="flex items-center justify-between rounded-xl bg-zinc-100 p-3 ring-1 ring-zinc-200 hover:ring-zinc-700"
                 >
                   <div>
                     <p className="text-sm font-semibold">{it.name}</p>
-                    <p className="text-xs text-zinc-400">ID: {it.id}</p>
+                    <p className="text-xs text-zinc-600">ID: {it.id}</p>
                   </div>
                   <StatusPill status={it.status} />
                 </Link>

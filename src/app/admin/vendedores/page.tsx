@@ -291,17 +291,17 @@ export default function AdminVendedoresPage() {
   return (
     <AdminGuard title="Vendedores" subtitle="Somente o admin pode cadastrar, excluir ou alterar vendedores">
       <div className="space-y-6">
-        <div className="rounded-2xl bg-zinc-950/40 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white/40 p-4 ring-1 ring-zinc-200">
           <div className="mb-3">
             <h2 className="text-base font-semibold">Cadastrar vendedor</h2>
-            <p className="mt-1 text-xs text-zinc-400">O cadastro cria o usuário no Auth e o perfil em /users/{"{uid}"}.</p>
+            <p className="mt-1 text-xs text-zinc-600">O cadastro cria o usuário no Auth e o perfil em /users/{"{uid}"}.</p>
           </div>
 
           <div className="grid gap-3">
             <div>
-              <label className="mb-1 block text-sm text-zinc-300">E-mail do vendedor</label>
+              <label className="mb-1 block text-sm text-zinc-700">E-mail do vendedor</label>
               <input
-                className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
@@ -310,9 +310,9 @@ export default function AdminVendedoresPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm text-zinc-300">Nome (opcional)</label>
+              <label className="mb-1 block text-sm text-zinc-700">Nome (opcional)</label>
               <input
-                className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="Nome do vendedor"
@@ -346,13 +346,13 @@ export default function AdminVendedoresPage() {
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <Link href="/dashboard" className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-800 hover:bg-zinc-800">
+          <Link href="/dashboard" className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-200 hover:bg-zinc-800">
             Voltar
           </Link>
 
           <button
             onClick={() => load().catch(() => setErr("Não foi possível recarregar."))}
-            className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-800 hover:bg-zinc-800"
+            className="rounded-xl bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-200 hover:bg-zinc-800"
           >
             Recarregar
           </button>
@@ -361,33 +361,33 @@ export default function AdminVendedoresPage() {
         {msg ? <p className="whitespace-pre-line rounded-xl bg-emerald-950/40 p-3 text-sm text-emerald-200 ring-1 ring-emerald-900">{msg}</p> : null}
         {err ? <p className="whitespace-pre-line rounded-xl bg-rose-950/40 p-3 text-sm text-rose-200 ring-1 ring-rose-900">{err}</p> : null}
 
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <h2 className="text-base font-semibold">Edições</h2>
-          <p className="mt-1 text-sm text-zinc-400">Use qualquer edição como “vigente” do vendedor.</p>
+          <p className="mt-1 text-sm text-zinc-600">Use qualquer edição como “vigente” do vendedor.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {editions.map((e) => (
-              <span key={e.id} className="rounded-full bg-zinc-900/70 px-3 py-1 text-xs text-zinc-200 ring-1 ring-zinc-800">
+              <span key={e.id} className="rounded-full bg-zinc-900/70 px-3 py-1 text-xs text-zinc-200 ring-1 ring-zinc-200">
                 {e.name} • {e.status}
               </span>
             ))}
-            {editions.length === 0 ? <span className="text-sm text-zinc-400">Nenhuma edição.</span> : null}
+            {editions.length === 0 ? <span className="text-sm text-zinc-600">Nenhuma edição.</span> : null}
           </div>
         </div>
 
-        <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+        <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
           <h2 className="text-base font-semibold">Vendedores</h2>
-          <p className="mt-1 text-sm text-zinc-400">O vendedor não consegue mudar a edição — o app usa o activeEditionId do perfil.</p>
+          <p className="mt-1 text-sm text-zinc-600">O vendedor não consegue mudar a edição — o app usa o activeEditionId do perfil.</p>
 
           <div className="mt-4 space-y-3">
             {users.map((u) => {
               const active = u.activeEditionId ? editionMap.get(u.activeEditionId) : null;
               const invalid = !!u.activeEditionId && !active;
               return (
-                <div key={u.id} className="rounded-xl bg-zinc-900/60 p-3 ring-1 ring-zinc-800">
+                <div key={u.id} className="rounded-xl bg-zinc-50 p-3 ring-1 ring-zinc-200">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="text-sm font-semibold text-zinc-100">{u.email ?? u.id}</p>
-                      <p className="text-xs text-zinc-400">Edição vigente: {active ? `${active.name} (${active.status})` : "— (não definida)"}</p>
+                      <p className="text-xs text-zinc-600">Edição vigente: {active ? `${active.name} (${active.status})` : "— (não definida)"}</p>
                       {invalid ? (
                         <p className="mt-2 text-xs text-amber-200">
                           Valor inválido em <code>activeEditionId</code>: <code>{u.activeEditionId}</code>. Parece ser o <b>nome/número</b> da edição, não o <b>ID</b> do documento.
@@ -400,7 +400,7 @@ export default function AdminVendedoresPage() {
                         value={u.activeEditionId ?? ""}
                         onChange={(e) => setActiveEdition(u.id, e.target.value ? e.target.value : null)}
                         disabled={busyId === u.id}
-                        className="rounded-xl bg-zinc-950 px-3 py-2 text-sm text-zinc-100 ring-1 ring-zinc-800"
+                        className="rounded-xl bg-white px-3 py-2 text-sm text-zinc-100 ring-1 ring-zinc-200"
                       >
                         <option value="">Sem edição</option>
                         {editions.map((e) => (
@@ -443,8 +443,8 @@ export default function AdminVendedoresPage() {
                       const inputVal = batchInputs[inputKey] ?? "";
 
                       return (
-                        <div className="mt-3 rounded-xl bg-zinc-950/40 p-3 ring-1 ring-zinc-800">
-                          <p className="text-xs text-zinc-400">Lotes liberados{maxExisting ? ` (existem: 1..${maxExisting})` : ""}:</p>
+                        <div className="mt-3 rounded-xl bg-white/40 p-3 ring-1 ring-zinc-200">
+                          <p className="text-xs text-zinc-600">Lotes liberados{maxExisting ? ` (existem: 1..${maxExisting})` : ""}:</p>
 
                           <div className="mt-2 flex flex-wrap gap-2">
                             {batches.length ? (
@@ -467,7 +467,7 @@ export default function AdminVendedoresPage() {
                                     }
                                   }}
                                   disabled={busyId === u.id}
-                                  className="rounded-full bg-zinc-900/70 px-3 py-1 text-xs text-zinc-200 ring-1 ring-zinc-800 hover:bg-zinc-900 disabled:opacity-50"
+                                  className="rounded-full bg-zinc-900/70 px-3 py-1 text-xs text-zinc-200 ring-1 ring-zinc-200 hover:bg-zinc-900 disabled:opacity-50"
                                 >
                                   Lote {b} ✕
                                 </button>
@@ -482,7 +482,7 @@ export default function AdminVendedoresPage() {
                               value={inputVal}
                               onChange={(e) => setBatchInputs((prev) => ({ ...prev, [inputKey]: e.target.value }))}
                               placeholder="Adicionar lote (ex.: 3)"
-                              className="w-44 rounded-xl bg-zinc-950 px-3 py-2 text-sm text-zinc-100 ring-1 ring-zinc-800 outline-none focus:ring-zinc-600"
+                              className="w-44 rounded-xl bg-white px-3 py-2 text-sm text-zinc-100 ring-1 ring-zinc-200 outline-none focus:ring-zinc-600"
                               disabled={busyId === u.id}
                             />
 
@@ -535,7 +535,7 @@ export default function AdminVendedoresPage() {
                             </button>
                           </div>
 
-                          <p className="mt-2 text-xs text-zinc-500">Dica: o vendedor só consegue validar/vender cartelas que pertencem aos lotes liberados.</p>
+                          <p className="mt-2 text-xs text-zinc-9000">Dica: o vendedor só consegue validar/vender cartelas que pertencem aos lotes liberados.</p>
                         </div>
                       );
                     })()
@@ -544,7 +544,7 @@ export default function AdminVendedoresPage() {
               );
             })}
 
-            {users.length === 0 ? <p className="text-sm text-zinc-400">Nenhum vendedor encontrado.</p> : null}
+            {users.length === 0 ? <p className="text-sm text-zinc-600">Nenhum vendedor encontrado.</p> : null}
           </div>
         </div>
       </div>

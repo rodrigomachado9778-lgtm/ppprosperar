@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MobileShell } from "@/src/components/MobileShell";
+import { AppShell } from "@/src/components/AppShell";
 import { useUserRole } from "@/src/lib/auth/useUserRole";
 
 export function AdminGuard({
@@ -23,27 +23,37 @@ export function AdminGuard({
 
   if (authLoading || loading) {
     return (
-      <MobileShell title={title} subtitle={subtitle}>
-        <p className="text-sm text-zinc-400">Carregando…</p>
-      </MobileShell>
+      <AppShell title={title}>
+        {subtitle ? <p className="mb-3 text-xs text-zinc-600">{subtitle}</p> : null}
+        <p className="text-sm text-zinc-600">Carregando…</p>
+      </AppShell>
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <AppShell title={title}>
+        {subtitle ? <p className="mb-3 text-xs text-zinc-600">{subtitle}</p> : null}
+        <p className="text-sm text-zinc-600">Redirecionando…</p>
+      </AppShell>
+    );
+  }
 
   if (role !== "admin") {
     return (
-      <MobileShell title={title} subtitle={subtitle}>
+      <AppShell title={title}>
+        {subtitle ? <p className="mb-3 text-xs text-zinc-600">{subtitle}</p> : null}
         <div className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-200 ring-1 ring-red-500/30">
           Acesso restrito ao administrador.
         </div>
-      </MobileShell>
+      </AppShell>
     );
   }
 
   return (
-    <MobileShell title={title} subtitle={subtitle}>
+    <AppShell title={title}>
+      {subtitle ? <p className="mb-3 text-xs text-zinc-600">{subtitle}</p> : null}
       {children}
-    </MobileShell>
+    </AppShell>
   );
 }

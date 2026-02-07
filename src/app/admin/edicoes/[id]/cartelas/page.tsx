@@ -166,31 +166,31 @@ export default function CartelasPage() {
   return (
     <AdminGuard title="Cartelas" subtitle="Gere lotes, imprima e acompanhe validações (venda)">
       {loading ? (
-        <p className="text-sm text-zinc-400">Carregando…</p>
+        <p className="text-sm text-zinc-600">Carregando…</p>
       ) : !edition ? (
         <div className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-200 ring-1 ring-red-500/30">Edição não encontrada.</div>
       ) : (
         <div className="space-y-6">
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm text-zinc-400">Edição</p>
+                <p className="text-sm text-zinc-600">Edição</p>
                 <p className="text-base font-semibold">{edition.name}</p>
-                <p className="mt-1 text-sm text-zinc-400">Status: {edition.status}</p>
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="mt-1 text-sm text-zinc-600">Status: {edition.status}</p>
+                <p className="mt-1 text-xs text-zinc-9000">
                   Regras: cada cartela tem 20 números (1–50). As {edition.roundsCount ?? 4} rodada(s) são independentes e usam os mesmos 20 números.
                 </p>
               </div>
 
-              <Link className="text-sm text-zinc-300 underline decoration-zinc-600 hover:text-zinc-100" href={`/admin/edicoes/${editionId}`}>
+              <Link className="text-sm text-zinc-700 underline decoration-zinc-600 hover:text-zinc-100" href={`/admin/edicoes/${editionId}`}>
                 Voltar
               </Link>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <h2 className="text-base font-semibold">Gerar lote de cartelas</h2>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-zinc-600">
               Gere cartelas automaticamente. Elas só entram no sorteio depois de <span className="text-zinc-200">validadas</span> pelo vendedor.
             </p>
 
@@ -205,7 +205,7 @@ export default function CartelasPage() {
                 type="number"
                 min={1}
                 max={50}
-                className="w-40 rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                className="w-40 rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                 value={qty}
                 onChange={(e) => setQty(Number(e.target.value))}
                 disabled={!canGenerate || busy}
@@ -219,7 +219,7 @@ export default function CartelasPage() {
               </button>
 
               <button
-                className="rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-zinc-200 ring-1 ring-zinc-800 hover:ring-zinc-700 disabled:opacity-60"
+                className="rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-zinc-200 ring-1 ring-zinc-200 hover:ring-zinc-700 disabled:opacity-60"
                 disabled={items.length === 0}
                 onClick={openPrint}
                 title="Abre uma página pronta para impressão (use Ctrl+P)"
@@ -231,16 +231,16 @@ export default function CartelasPage() {
             {err && <p className="mt-3 rounded-xl bg-red-500/10 p-3 text-sm text-red-200 ring-1 ring-red-500/30">{err}</p>}
           </div>
 
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-semibold">Cartelas</h2>
-                <p className="mt-1 text-sm text-zinc-400">Total exibido: {items.length}</p>
+                <p className="mt-1 text-sm text-zinc-600">Total exibido: {items.length}</p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
                 <select
-                  className="rounded-xl bg-zinc-950/60 px-3 py-2 text-sm outline-none ring-1 ring-zinc-800"
+                  className="rounded-xl bg-zinc-100 px-3 py-2 text-sm outline-none ring-1 ring-zinc-200"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
                 >
@@ -251,7 +251,7 @@ export default function CartelasPage() {
                 </select>
 
                 <select
-                  className="rounded-xl bg-zinc-950/60 px-3 py-2 text-sm outline-none ring-1 ring-zinc-800"
+                  className="rounded-xl bg-zinc-100 px-3 py-2 text-sm outline-none ring-1 ring-zinc-200"
                   value={batchFilter === "all" ? "all" : String(batchFilter)}
                   onChange={(e) => setBatchFilter(e.target.value === "all" ? "all" : Number(e.target.value))}
                 >
@@ -266,25 +266,25 @@ export default function CartelasPage() {
             </div>
 
             {items.length === 0 ? (
-              <p className="mt-3 text-sm text-zinc-400">Nenhuma cartela encontrada com os filtros atuais.</p>
+              <p className="mt-3 text-sm text-zinc-600">Nenhuma cartela encontrada com os filtros atuais.</p>
             ) : (
               <div className="mt-3 space-y-2">
                 {items.slice(0, 200).map((c) => (
                   <div
                     key={c.id}
-                    className="flex items-start justify-between gap-3 rounded-xl bg-zinc-950/60 p-3 ring-1 ring-zinc-800"
+                    className="flex items-start justify-between gap-3 rounded-xl bg-zinc-100 p-3 ring-1 ring-zinc-200"
                   >
                     <div>
                       <p className="text-sm font-semibold">
-                        Cartela #{c.printedNumber ?? String(c.publicNumberInt ?? "")} <span className="text-xs text-zinc-500">(lote {c.batch})</span>
+                        Cartela #{c.printedNumber ?? String(c.publicNumberInt ?? "")} <span className="text-xs text-zinc-9000">(lote {c.batch})</span>
                       </p>
-                      <p className="mt-1 text-xs text-zinc-400">Status: {c.status}</p>
-                      <p className="mt-1 text-xs text-zinc-400">Números: {c.numbers.join(", ")}</p>
+                      <p className="mt-1 text-xs text-zinc-600">Status: {c.status}</p>
+                      <p className="mt-1 text-xs text-zinc-600">Números: {c.numbers.join(", ")}</p>
                     </div>
                   </div>
                 ))}
                 {items.length > 200 && (
-                  <p className="text-xs text-zinc-500">Mostrando as 200 mais recentes. Use filtros para refinar.</p>
+                  <p className="text-xs text-zinc-9000">Mostrando as 200 mais recentes. Use filtros para refinar.</p>
                 )}
               </div>
             )}

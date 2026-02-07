@@ -7,7 +7,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "@/src/lib/firebase/client";
 import type { Edition, Round, Card } from "@/src/lib/prosperar/types";
 import { formatBRLFromCents } from "@/src/lib/prosperar/format";
-import { MobileShell } from "@/src/components/MobileShell";
+import { AppShell } from "@/src/components/AppShell";
 
 type LookupCard = {
   publicNumberInt: number;
@@ -140,19 +140,19 @@ export default function ResultadoPage() {
   }
 
   return (
-    <MobileShell title="Resultados" subtitle="Consulta pública por CPF + telefone">
+    <AppShell title="Resultados" showLogout={false}>
       {loading ? (
-        <p className="text-sm text-zinc-400">Carregando…</p>
+        <p className="text-sm text-zinc-600">Carregando…</p>
       ) : editions.length === 0 ? (
-        <p className="text-sm text-zinc-400">Nenhuma edição disponível.</p>
+        <p className="text-sm text-zinc-600">Nenhuma edição disponível.</p>
       ) : (
         <div className="space-y-4">
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <div className="flex items-start justify-between gap-3">
               <div className="w-full">
-                <p className="text-xs text-zinc-400">Edição</p>
+                <p className="text-xs text-zinc-600">Edição</p>
                 <select
-                  className="mt-2 w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                  className="mt-2 w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                   value={editionId}
                   onChange={(e) => {
                     setEditionId(e.target.value);
@@ -168,21 +168,21 @@ export default function ResultadoPage() {
                     </option>
                   ))}
                 </select>
-                <p className="mt-2 text-xs text-zinc-400">
+                <p className="mt-2 text-xs text-zinc-600">
                   Digite seu CPF e telefone para ver as cartelas compradas nesta edição.
                 </p>
               </div>
 
-              <Link className="text-sm text-zinc-300 underline decoration-zinc-600 hover:text-zinc-100" href="/admin/edicoes">
+              <Link className="text-sm text-zinc-700 underline decoration-zinc-600 hover:text-zinc-100" href="/admin/edicoes">
                 Área admin
               </Link>
             </div>
           </div>
 
           {selectedEdition?.youtubeUrl && (
-            <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+            <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
               <p className="text-sm font-semibold">Live do sorteio</p>
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-zinc-600">
                 {selectedEdition.scheduledAt ? "Sorteio previsto" : "Link"}
                 {selectedEdition.scheduledAt ? ": " : ": "}
                 {selectedEdition.scheduledAt
@@ -200,17 +200,17 @@ export default function ResultadoPage() {
             </div>
           )}
 
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <p className="text-sm font-semibold">Minhas cartelas</p>
             <div className="mt-3 grid gap-2">
               <input
-                className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                 placeholder="Telefone (DDD + número) — ex.: 11999999999"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
               <input
-                className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                 placeholder="CPF — ex.: 123.456.789-09"
                 value={cpf}
                 onChange={(e) => setCpf(e.target.value)}
@@ -230,10 +230,10 @@ export default function ResultadoPage() {
 
           {myCards && (
             <div className="space-y-3">
-              <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
-                <p className="text-sm text-zinc-400">Comprador</p>
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <p className="text-sm text-zinc-600">Comprador</p>
                 <p className="text-lg font-semibold">{buyerName || "—"}</p>
-                <p className="mt-2 text-sm text-zinc-400">
+                <p className="mt-2 text-sm text-zinc-600">
                   {hasAnyResult ? "Resultados disponíveis para conferência." : "Ainda não há resultado publicado. Você pode confirmar que suas cartelas estão ativas nesta edição."}
                 </p>
               </div>
@@ -243,14 +243,14 @@ export default function ResultadoPage() {
                   Nenhuma cartela encontrada para este CPF + telefone nesta edição.
                 </div>
               ) : (
-                <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+                <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
                   <p className="text-sm font-semibold">Cartelas encontradas ({myCards.length})</p>
                   <div className="mt-3 grid gap-2">
                     {myCards.map((c) => (
-                      <div key={c.publicNumberInt} className="flex items-center justify-between gap-3 rounded-xl bg-zinc-950/40 p-3 ring-1 ring-zinc-800">
+                      <div key={c.publicNumberInt} className="flex items-center justify-between gap-3 rounded-xl bg-white/40 p-3 ring-1 ring-zinc-200">
                         <div>
                           <p className="text-sm font-semibold">#{c.printedNumber || String(c.publicNumberInt)}</p>
-                          <p className="text-xs text-zinc-400">Status: {c.status || "—"}</p>
+                          <p className="text-xs text-zinc-600">Status: {c.status || "—"}</p>
                         </div>
                         <button
                           className="rounded-xl bg-zinc-800 px-3 py-2 text-sm font-semibold hover:bg-zinc-700 disabled:opacity-60"
@@ -269,18 +269,18 @@ export default function ResultadoPage() {
 
           {selectedPublicNumber != null && selectedCard && (
             <div className="space-y-3">
-              <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
-                <p className="text-sm text-zinc-400">Cartela</p>
+              <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                <p className="text-sm text-zinc-600">Cartela</p>
                 <p className="text-lg font-semibold">#{selectedCard.printedNumber ?? String(selectedCard.publicNumberInt ?? "")}</p>
-                <p className="mt-2 text-sm text-zinc-300">Números: {selectedCard.numbers.join(", ")}</p>
+                <p className="mt-2 text-sm text-zinc-700">Números: {selectedCard.numbers.join(", ")}</p>
               </div>
 
               {perRound.map(({ round, hits, missing, isWinner }) => (
-                <div key={round.id} className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+                <div key={round.id} className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-base font-semibold">Rodada {round.index}</p>
-                      <p className="mt-1 text-sm text-zinc-400">
+                      <p className="mt-1 text-sm text-zinc-600">
                         Status: {round.status} • Prêmio: {formatBRLFromCents(Number(round.prizeCents ?? 0))}
                       </p>
                     </div>
@@ -293,24 +293,24 @@ export default function ResultadoPage() {
                   </div>
 
                   <div className="mt-3 grid gap-2">
-                    <p className="text-sm text-zinc-300">
+                    <p className="text-sm text-zinc-700">
                       Acertos: <span className="font-semibold">{hits}/20</span>
                     </p>
 
                     {round.status !== "READY" && (
-                      <p className="text-xs text-zinc-400">
+                      <p className="text-xs text-zinc-600">
                         Números sorteados: {(round.drawnNumbers ?? []).length ? (round.drawnNumbers ?? []).join(" • ") : "—"}
                       </p>
                     )}
 
                     {round.status === "CLOSED" && (
-                      <p className="text-sm text-zinc-300">
+                      <p className="text-sm text-zinc-700">
                         Valor por ganhador: <span className="font-semibold">{formatBRLFromCents(Number(round.prizePerWinnerCents ?? 0))}</span>
                       </p>
                     )}
 
                     {!isWinner && round.status !== "READY" && missing.length > 0 && (
-                      <p className="text-xs text-zinc-400">Faltando: {missing.join(", ")}</p>
+                      <p className="text-xs text-zinc-600">Faltando: {missing.join(", ")}</p>
                     )}
                   </div>
                 </div>
@@ -319,6 +319,6 @@ export default function ResultadoPage() {
           )}
         </div>
       )}
-    </MobileShell>
+    </AppShell>
   );
 }

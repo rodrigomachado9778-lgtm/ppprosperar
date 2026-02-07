@@ -267,8 +267,15 @@ export async function POST(req: Request) {
           vendorUid,
           vendorEmailSnapshot: String(s.vendorEmailSnapshot ?? "") || vendorEmailSnapshot,
           cardPublicNumbers: nextPublic,
-          // keep printedNumbers for UI; fallback to public numbers if missing
-          cardPrintedNumbers: Array.isArray(s.cardPrintedNumbers) ? s.cardPrintedNumbers : printed,
+          // printedNumbers: union previous printed with newly validated cards
+          cardPrintedNumbers: (() => {
+            const prevPrinted = Array.isArray(s.cardPrintedNumbers) ? s.cardPrintedNumbers.map(String) : [];
+            const nextPrinted = [...prevPrinted];
+            for (const v of okNums.map(String)) if (!nextPrinted.includes(v)) nextPrinted.push(v);
+            // if there were no printed numbers yet, default to public numbers
+            if (nextPrinted.length === 0) return nextPublic;
+            return nextPrinted;
+          })(),
           updatedAt: new Date(),
           lastPurchaseAt: new Date(),
         });

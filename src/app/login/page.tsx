@@ -65,7 +65,7 @@ export default function LoginPage() {
   if (loading) {
     return (
       <MobileShell title="Entrar" subtitle="Painel do Bingo">
-        <p className="text-sm text-zinc-400">Carregando…</p>
+        <p className="text-sm text-zinc-600">Carregando…</p>
       </MobileShell>
     );
   }
@@ -81,9 +81,9 @@ export default function LoginPage() {
       )}
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm text-zinc-300">E-mail</label>
+          <label className="mb-1 block text-sm text-zinc-700">E-mail</label>
           <input
-            className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+            className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
             type="email"
             inputMode="email"
             autoComplete="email"
@@ -95,9 +95,9 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm text-zinc-300">Senha</label>
+          <label className="mb-1 block text-sm text-zinc-700">Senha</label>
           <input
-            className="w-full rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+            className="w-full rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
             type="password"
             autoComplete="current-password"
             placeholder="••••••••"
@@ -122,7 +122,7 @@ export default function LoginPage() {
         </button>
 
         <button
-          className="w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-800 disabled:opacity-60"
+          className="w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-200 disabled:opacity-60"
           type="button"
           disabled={busy || resetBusy}
           onClick={onForgotPassword}
@@ -130,7 +130,7 @@ export default function LoginPage() {
           {resetBusy ? "Enviando link..." : "Esqueci minha senha"}
         </button>
 
-        <p className="text-xs text-zinc-400">
+        <p className="text-xs text-zinc-600">
           Obs.: não há tela de cadastro. Peça para o administrador criar seu acesso.
         </p>
       </form>

@@ -54,23 +54,23 @@ function ConfirmModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
         type="button"
-        className="absolute inset-0 bg-black/60"
+        className="absolute inset-0 bg-black/30"
         onClick={busy ? undefined : onCancel}
         aria-label="Fechar"
       />
-      <div className="relative w-full max-w-sm rounded-2xl bg-zinc-950 p-4 ring-1 ring-zinc-800 shadow-xl">
-        <p className="text-sm text-zinc-400">Confirmação</p>
+      <div className="relative w-full max-w-sm rounded-2xl bg-white p-4 ring-1 ring-zinc-200 shadow-xl">
+        <p className="text-sm text-zinc-600">Confirmação</p>
         <h3 className="mt-1 text-xl font-semibold text-zinc-100">
           Registrar o número <span className="text-emerald-300">{number}</span>?
         </h3>
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="mt-2 text-sm text-zinc-600">
           Se você clicar em <b>Sim</b>, este número será gravado na rodada atual.
         </p>
 
         <div className="mt-4 flex items-center justify-end gap-2">
           <button
             type="button"
-            className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-800 hover:ring-zinc-700 disabled:opacity-60"
+            className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-zinc-100 ring-1 ring-zinc-200 hover:ring-zinc-700 disabled:opacity-60"
             onClick={onCancel}
             disabled={busy}
           >
@@ -455,25 +455,25 @@ export default function SorteioPage() {
       />
 
       {loading ? (
-        <p className="text-sm text-zinc-400">Carregando…</p>
+        <p className="text-sm text-zinc-600">Carregando…</p>
       ) : !edition ? (
         <div className="rounded-2xl bg-red-500/10 p-4 text-sm text-red-200 ring-1 ring-red-500/30">
           Edição não encontrada.
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm text-zinc-400">Edição</p>
+                <p className="text-sm text-zinc-600">Edição</p>
                 <p className="text-base font-semibold">{edition.name}</p>
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-zinc-600">
                   Status: {edition.status} • Cartelas: {cardsCount}
                 </p>
               </div>
 
               <Link
-                className="text-sm text-zinc-300 underline decoration-zinc-600 hover:text-zinc-100"
+                className="text-sm text-zinc-700 underline decoration-zinc-600 hover:text-zinc-100"
                 href={`/admin/edicoes/${editionId}`}
               >
                 Voltar
@@ -481,21 +481,21 @@ export default function SorteioPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+          <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
             <h2 className="text-base font-semibold">Rodadas</h2>
             <div className="mt-3 grid gap-2">
               {rounds.map((r) => (
                 <button
                   key={r.id}
                   className={`flex items-center justify-between rounded-xl p-3 ring-1 ${
-                    r.id === selectedRoundId ? "bg-zinc-900 ring-zinc-700" : "bg-zinc-950/60 ring-zinc-800 hover:ring-zinc-700"
+                    r.id === selectedRoundId ? "bg-zinc-900 ring-zinc-700" : "bg-zinc-100 ring-zinc-200 hover:ring-zinc-700"
                   }`}
                   onClick={() => setSelectedRoundId(r.id)}
                   type="button"
                 >
                   <div className="text-left">
                     <p className="text-sm font-semibold">Rodada {r.index}</p>
-                    <p className="text-xs text-zinc-400">Prêmio: {formatBRLFromCents(Number(r.prizeCents ?? 0))}</p>
+                    <p className="text-xs text-zinc-600">Prêmio: {formatBRLFromCents(Number(r.prizeCents ?? 0))}</p>
                   </div>
                   <RoundPill status={r.status} />
                 </button>
@@ -504,11 +504,11 @@ export default function SorteioPage() {
           </div>
 
           {selectedRound && (
-            <div className="rounded-2xl bg-zinc-950/50 p-4 ring-1 ring-zinc-800">
+            <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-base font-semibold">Rodada {selectedRound.index}</h2>
-                  <p className="mt-1 text-sm text-zinc-400">
+                  <p className="mt-1 text-sm text-zinc-600">
                     Status: {selectedRound.status} • Marcados: {selectedRound.drawnNumbers?.length ?? 0}
                   </p>
                 </div>
@@ -526,8 +526,8 @@ export default function SorteioPage() {
               </div>
 
               <div className="mt-4 grid gap-3">
-                <div className="rounded-xl bg-zinc-950/60 p-3 ring-1 ring-zinc-800">
-                  <p className="text-xs text-zinc-400">Prêmio (editável só enquanto READY)</p>
+                <div className="rounded-xl bg-zinc-100 p-3 ring-1 ring-zinc-200">
+                  <p className="text-xs text-zinc-600">Prêmio (editável só enquanto READY)</p>
                   <PrizeEditor
                     valueCents={Number(selectedRound.prizeCents ?? 0)}
                     disabled={busy || selectedRound.status !== "READY"}
@@ -535,11 +535,11 @@ export default function SorteioPage() {
                   />
                 </div>
 
-                <div className="rounded-xl bg-zinc-950/60 p-3 ring-1 ring-zinc-800">
-                  <p className="text-xs text-zinc-400">Registrar número</p>
+                <div className="rounded-xl bg-zinc-100 p-3 ring-1 ring-zinc-200">
+                  <p className="text-xs text-zinc-600">Registrar número</p>
                   <div className="mt-2 flex gap-2">
                     <input
-                      className="flex-1 rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+                      className="flex-1 rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
                       placeholder="1 a 50"
                       value={numberInput}
                       onChange={(e) => setNumberInput(e.target.value)}
@@ -555,7 +555,7 @@ export default function SorteioPage() {
                       Marcar
                     </button>
                   </div>
-                  <p className="mt-2 text-xs text-zinc-400">
+                  <p className="mt-2 text-xs text-zinc-600">
                     Dica: você também pode clicar na grade 1–50 abaixo (vai pedir confirmação).
                   </p>
                 </div>
@@ -583,8 +583,8 @@ export default function SorteioPage() {
                           already
                             ? "bg-emerald-500/15 text-emerald-100 ring-emerald-500/30"
                             : disabled
-                            ? "bg-zinc-900/40 text-zinc-500 ring-zinc-800"
-                            : "bg-zinc-950/60 text-zinc-100 ring-zinc-800 hover:ring-zinc-700"
+                            ? "bg-zinc-50 text-zinc-9000 ring-zinc-200"
+                            : "bg-zinc-100 text-zinc-100 ring-zinc-200 hover:ring-zinc-700"
                         }`}
                         disabled={disabled}
                         onClick={() => onGridClick(n)}
@@ -596,8 +596,8 @@ export default function SorteioPage() {
                   })}
                 </div>
 
-                <div className="rounded-xl bg-zinc-950/60 p-3 ring-1 ring-zinc-800">
-                  <p className="text-xs text-zinc-400">Números marcados (ordem)</p>
+                <div className="rounded-xl bg-zinc-100 p-3 ring-1 ring-zinc-200">
+                  <p className="text-xs text-zinc-600">Números marcados (ordem)</p>
                   <p className="mt-2 text-sm">
                     {(selectedRound.drawnNumbers ?? []).length === 0 ? "—" : (selectedRound.drawnNumbers ?? []).join(" • ")}
                   </p>
@@ -645,7 +645,7 @@ function PrizeEditor({
   return (
     <div className="mt-2 flex gap-2">
       <input
-        className="flex-1 rounded-xl bg-zinc-950/60 px-3 py-3 text-base outline-none ring-1 ring-zinc-800 focus:ring-zinc-600"
+        className="flex-1 rounded-xl bg-zinc-100 px-3 py-3 text-base outline-none ring-1 ring-zinc-200 focus:ring-zinc-600"
         value={txt}
         onChange={(e) => setTxt(e.target.value)}
         disabled={disabled}
