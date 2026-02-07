@@ -93,97 +93,100 @@ export default function AdminEditionsHistoryPage() {
   }, [items, qText, statusFilter]);
 
   return (
-    <AdminGuard>
+    <AdminGuard
+      title="Histórico de edições"
+      subtitle="Pesquise por nome/ID e abra uma edição para ver detalhes."
+    >
       <div className="min-h-screen bg-gradient-to-b from-zinc-50 via-white to-white">
-        <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight">Histórico de edições</h1>
-            <p className="mt-1 text-sm text-zinc-600">Pesquise por nome/ID e abra uma edição para ver detalhes.</p>
-          </div>
-
+        {/* desktop igual mobile */}
+        <div className="mx-auto w-full max-w-[640px] px-4 py-6">
           <Link
             href="/admin/edicoes"
-            className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-50"
+            className="inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-50"
           >
             Voltar
           </Link>
-        </div>
 
-        <div className="mt-6 rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="sm:col-span-2">
-              <label className="text-sm font-semibold text-zinc-800">Pesquisar</label>
-              <input
-                value={qText}
-                onChange={(e) => setQText(e.target.value)}
-                placeholder="Digite nome ou ID..."
-                className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-400"
-              />
+          <div className="mt-4 rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <label className="text-sm font-semibold text-zinc-800">Pesquisar</label>
+                <input
+                  value={qText}
+                  onChange={(e) => setQText(e.target.value)}
+                  placeholder="Digite nome ou ID..."
+                  className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2.5 text-sm outline-none focus:border-zinc-400"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-zinc-800">Status</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  className="mt-1 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-zinc-400"
+                >
+                  <option value="ALL">Todos</option>
+                  <option value="DRAFT">Rascunho</option>
+                  <option value="READY">Pronta</option>
+                  <option value="RUNNING">Em andamento</option>
+                  <option value="FINISHED">Finalizada</option>
+                </select>
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-semibold text-zinc-800">Status</label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="mt-1 w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-zinc-400"
-              >
-                <option value="ALL">Todos</option>
-                <option value="DRAFT">Rascunho</option>
-                <option value="READY">Pronta</option>
-                <option value="RUNNING">Em andamento</option>
-                <option value="FINISHED">Finalizada</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mt-4 overflow-hidden rounded-2xl ring-1 ring-zinc-200">
-            <div className="grid grid-cols-12 gap-0 bg-zinc-50 px-4 py-3 text-xs font-semibold text-zinc-600">
-              <div className="col-span-5">Edição</div>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-2 hidden sm:block">Cartela</div>
-              <div className="col-span-3 hidden md:block">Criada</div>
-            </div>
-
-            {loading ? (
-              <div className="px-4 py-8 text-sm text-zinc-600">Carregando...</div>
-            ) : filtered.length === 0 ? (
-              <div className="px-4 py-8 text-sm text-zinc-600">Nenhuma edição encontrada com esses filtros.</div>
-            ) : (
-              <div className="divide-y divide-zinc-100">
-                {filtered.map((it) => (
+            <div className="mt-4 space-y-3">
+              {loading ? (
+                <div className="rounded-2xl bg-zinc-50 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
+                  Carregando...
+                </div>
+              ) : filtered.length === 0 ? (
+                <div className="rounded-2xl bg-zinc-50 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
+                  Nenhuma edição encontrada com esses filtros.
+                </div>
+              ) : (
+                filtered.map((it) => (
                   <Link
                     key={it.id}
                     href={`/admin/edicoes/${it.id}`}
-                    className="grid grid-cols-12 items-center gap-0 px-4 py-3 hover:bg-zinc-50"
+                    className="block rounded-2xl bg-white p-4 ring-1 ring-zinc-200 transition hover:bg-zinc-50"
                   >
-                    <div className="col-span-5 min-w-0">
-                      <div className="truncate text-sm font-semibold text-zinc-900">{it.name || "Sem nome"}</div>
-                      <div className="mt-0.5 truncate text-xs text-zinc-500">ID: {it.id}</div>
-                      <div className="mt-1 text-xs text-zinc-500 md:hidden">Criada: {formatDateTime(it.createdAt)}</div>
-                    </div>
-
-                    <div className="col-span-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-zinc-900">{it.name || "Sem nome"}</div>
+                        <div className="mt-0.5 truncate text-xs text-zinc-500">ID: {it.id}</div>
+                      </div>
                       <StatusPill status={it.status} />
                     </div>
 
-                    <div className="col-span-2 hidden sm:block">
-                      <div className="text-sm font-medium text-zinc-900">{formatBRLFromCents(Number(it.cardPriceCents) || 0)}</div>
-                      <div className="text-xs text-zinc-500">{Number(it.roundsCount) || 0} rodadas</div>
+                    <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-zinc-700">
+                      <div className="rounded-xl bg-zinc-50 p-3 ring-1 ring-zinc-200">
+                        <div className="text-xs text-zinc-500">Criada em</div>
+                        <div className="mt-0.5 font-medium">{formatDateTime(it.createdAt)}</div>
+                      </div>
+
+                      <div className="rounded-xl bg-zinc-50 p-3 ring-1 ring-zinc-200">
+                        <div className="text-xs text-zinc-500">Cartela</div>
+                        <div className="mt-0.5 font-medium">{formatBRLFromCents(Number(it.cardPriceCents) || 0)}</div>
+                        <div className="mt-1 text-xs text-zinc-500">{Number(it.roundsCount) || 0} rodadas</div>
+                      </div>
+
+                      <div className="rounded-xl bg-zinc-50 p-3 ring-1 ring-zinc-200">
+                        <div className="text-xs text-zinc-500">Sorteio</div>
+                        <div className="mt-0.5 font-medium">{formatDateTime(it.scheduledAt)}</div>
+                      </div>
                     </div>
 
-                    <div className="col-span-3 hidden md:block text-sm text-zinc-700">{formatDateTime(it.createdAt)}</div>
+                    <div className="mt-3 text-xs font-semibold text-zinc-900">Abrir detalhes →</div>
                   </Link>
-                ))}
-              </div>
-            )}
-          </div>
+                ))
+              )}
+            </div>
 
-          <div className="mt-3 text-xs text-zinc-500">
-            Dica: clique em uma edição para abrir os detalhes.
+            <div className="mt-3 text-xs text-zinc-500">
+              Dica: clique em uma edição para abrir os detalhes.
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </AdminGuard>
