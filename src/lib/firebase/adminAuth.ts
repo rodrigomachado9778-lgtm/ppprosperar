@@ -22,7 +22,7 @@ export async function verifyFirebaseIdTokenFromRequest(req: Request) {
 
   const auth = getAdminAuth();
   try {
-    return await auth.verifyIdToken(token);
+    return await auth.verifyIdToken(token, true);
   } catch (e: any) {
     const err = new Error("Invalid or expired token");
     // @ts-ignore

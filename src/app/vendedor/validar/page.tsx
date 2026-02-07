@@ -379,7 +379,7 @@ export default function CadastroVendasPage() {
 
     // Lookup hash (server-salted) used by the public /resultado page (CPF + telefone).
     // We generate it server-side to avoid exposing the secret salt.
-    const idToken = await user.getIdToken(true);
+    const idToken = await user.getIdToken();
     const getLookupHash = async (phone: string) => {
       const r = await fetch("/api/internal/lookup-hash", {
         method: "POST",
@@ -425,7 +425,7 @@ export default function CadastroVendasPage() {
       // Prefer server-side validation (avoids Firestore rules/transaction edge cases).
       // If the API is not available, we fall back to the legacy client transaction below.
       try {
-        const idToken = await user.getIdToken(true);
+        const idToken = await user.getIdToken();
         const resp = await fetch("/api/vendor/validate", {
           method: "POST",
           headers: {
