@@ -212,7 +212,7 @@ export default function AdminEditionsPage() {
     load().catch(() => setLoadingList(false));
   }, []);
 
-  // Autofoco quando abre modal
+  // Autofoco ao abrir modal
   useEffect(() => {
     if (!createOpen) return;
     const t = window.setTimeout(() => firstFieldRef.current?.focus(), 50);
@@ -234,20 +234,15 @@ export default function AdminEditionsPage() {
     return items.find((x) => x.id === id) ?? null;
   }, [items, system?.currentEditionId]);
 
-  const totals = useMemo(() => {
-    const total = items.length;
-    const open = items.filter((x) => x.status !== "FINISHED").length;
-    const finished = items.filter((x) => x.status === "FINISHED").length;
-    return { total, open, finished };
-  }, [items]);
-
   const createBlockedReason = useMemo(() => {
     const st = system?.currentEditionStatus;
     if (st && st !== "FINISHED") {
       return `A edição atual ainda não foi finalizada (${statusLabel(st)}). Finalize para criar uma nova.`;
     }
+
     const anyOpen = items.some((x) => x.status !== "FINISHED");
     if (!system && anyOpen) return "Existe uma edição não finalizada. Finalize antes de criar outra.";
+
     return null;
   }, [system, items]);
 
@@ -380,9 +375,9 @@ export default function AdminEditionsPage() {
       subtitle="Crie e acompanhe a edição atual. O histórico fica em uma tela separada."
     >
       <div className="min-h-screen bg-gradient-to-b from-zinc-50 via-white to-white">
-        {/* desktop igual mobile */}
+        {/* Desktop igual mobile */}
         <div className="mx-auto w-full max-w-[640px] px-4 py-6">
-          {/* ações topo (sempre empilhado) */}
+          {/* Ações topo (sempre empilhado) */}
           <div className="flex flex-col gap-2">
             <Link
               href="/admin/edicoes/historico"
@@ -406,41 +401,8 @@ export default function AdminEditionsPage() {
             </button>
           </div>
 
-          {/* métricas: 1 card com 3 dentro lado a lado */}
-          <div className="mt-6">
-            <Card title="Edições" description="Visão geral (total, abertas e finalizadas)" tone="muted">
-              <div className="overflow-x-auto">
-                <div className="grid min-w-[520px] grid-cols-3 gap-3">
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
-                    <div className="text-xs font-semibold text-zinc-500">Total</div>
-                    <div className="mt-1 text-2xl font-semibold tabular-nums text-zinc-900">
-                      {loadingList ? "—" : totals.total}
-                    </div>
-                    <div className="mt-1 text-xs text-zinc-500">Edições cadastradas</div>
-                  </div>
-
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
-                    <div className="text-xs font-semibold text-zinc-500">Abertas</div>
-                    <div className="mt-1 text-2xl font-semibold tabular-nums text-zinc-900">
-                      {loadingList ? "—" : totals.open}
-                    </div>
-                    <div className="mt-1 text-xs text-zinc-500">Não finalizadas</div>
-                  </div>
-
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
-                    <div className="text-xs font-semibold text-zinc-500">Finalizadas</div>
-                    <div className="mt-1 text-2xl font-semibold tabular-nums text-zinc-900">
-                      {loadingList ? "—" : totals.finished}
-                    </div>
-                    <div className="mt-1 text-xs text-zinc-500">Encerradas</div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* cards principais */}
-          <div className="mt-4 space-y-4">
+          {/* Conteúdo principal (sempre 1 coluna) */}
+          <div className="mt-6 space-y-4">
             <Card
               title="Edição atual"
               description="A edição ativa é a que controla geração de cartelas e sorteio."
@@ -487,6 +449,7 @@ export default function AdminEditionsPage() {
                     >
                       Abrir edição
                     </Link>
+
                     <Link
                       href="/admin/sorteio"
                       className="inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-50"
@@ -522,7 +485,9 @@ export default function AdminEditionsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-zinc-600">Nenhuma edição ativa encontrada. Crie uma nova edição para começar.</div>
+                <div className="text-sm text-zinc-600">
+                  Nenhuma edição ativa encontrada. Crie uma nova edição para começar.
+                </div>
               )}
             </Card>
 
@@ -571,7 +536,7 @@ export default function AdminEditionsPage() {
             </Card>
           </div>
 
-          {/* MODAL */}
+          {/* Modal Nova edição */}
           <Modal
             open={createOpen}
             title="Nova edição"
@@ -806,7 +771,7 @@ export default function AdminEditionsPage() {
               </div>
             ) : null}
 
-            {/* Rodapé (sempre empilhado) */}
+            {/* Rodapé empilhado */}
             <div className="mt-6 flex flex-col gap-2">
               <button
                 type="button"
